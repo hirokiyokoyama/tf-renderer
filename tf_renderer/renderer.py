@@ -1,7 +1,7 @@
 import tensorflow_addons as tfa
 import tensorflow as tf
 from tensorflow_graphics.rendering.reflectance import lambertian, phong
-from tensorflow_graphics.geometry.representation import triangle
+from tensorflow_graphics.geometry.representation import triangle, grid
 
 def point_in_triangle(points, triangles):
     """
