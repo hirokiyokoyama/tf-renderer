@@ -21,9 +21,9 @@ def point_in_triangle(points, triangles):
 
 def assign_triangles_to_pixels_bb(triangles, triangle_depths, image_size):
     # generate grid in bounding box
-    starts = tf.minimum(tf.maximum(tf.cast(tf.math.floor(tf.reduce_min(triangles, axis=[0,1])), tf.int32), 0), image_size)
-    stops = tf.minimum(tf.maximum(tf.cast(tf.math.ceil(tf.reduce_max(triangles, axis=[0,1])), tf.int32), 0), image_size)
-    grid = tf.cast(tf.stack(tf.meshgrid(tf.range(starts[0], stops[0]), tf.range(starts[1], stops[1])), axis=-1), tf.float32)
+    starts = tf.minimum(tf.maximum(tf.cast(tf.math.floor(tf.reduce_min(triangles[...,::-1], axis=[0,1])), tf.int32), 0), image_size)
+    stops = tf.minimum(tf.maximum(tf.cast(tf.math.ceil(tf.reduce_max(triangles[...,::-1], axis=[0,1])), tf.int32), 0), image_size)
+    grid = tf.cast(tf.stack(tf.meshgrid(tf.range(starts[1], stops[1]), tf.range(starts[0], stops[0])), axis=-1), tf.float32)
 
     # find face indices projected onto the bounding box
     in_triangle = point_in_triangle(grid[tf.newaxis], triangles[:,tf.newaxis,tf.newaxis])
@@ -35,7 +35,7 @@ def assign_triangles_to_pixels_bb(triangles, triangle_depths, image_size):
     nearest_depths = tf.where(valid, nearest_depths, float('inf'))
 
     # pad with invalid values
-    paddings = [[starts[1], image_size[1]-stops[1]], [starts[0], image_size[0]-stops[0]]]
+    paddings = [[starts[0], image_size[0]-stops[0]], [starts[1], image_size[1]-stops[1]]]
     nearest_inds = tf.pad(nearest_inds, paddings, constant_values=0)
     nearest_depths = tf.pad(nearest_depths, paddings, constant_values=float('inf'))
     valid = tf.pad(valid, paddings, constant_values=False)
