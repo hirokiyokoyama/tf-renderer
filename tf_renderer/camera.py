@@ -9,12 +9,12 @@ class Camera(object):
         raise NotImplementedError()
     
 class PerspectiveCamera(Camera):
-    def __init__(self, focal, principal_point, fov=30.):
+    def __init__(self, focal, principal_point, fov=30., aspect_ratio=1.):
         self.focal = focal
         self.principal_point = principal_point
         fov = fov * np.pi / 180.
         f = 1. / np.tan(fov/2.)
-        self.f = tf.constant([f, f, -1.], dtype=tf.float32)
+        self.f = tf.constant([f*aspect_ratio, f, -1.], dtype=tf.float32)
 
     def project(self, points3d):
         points3d = tf.convert_to_tensor(points3d, dtype=tf.float32) * self.f
